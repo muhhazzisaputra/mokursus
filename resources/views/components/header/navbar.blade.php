@@ -1,90 +1,88 @@
 @props([
-    'logo' => 'BrandLogo',
-    'logoUrl' => '/',
+    'logoDesktop' => 'images/logo-primer.png',
+    'logoMobile' => 'images/logo-sekunder.png',
     'menuItems' => [
-        ['name' => 'Home', 'url' => '#home'],
-        ['name' => 'Fitur', 'url' => '#features'],
-        ['name' => 'Harga', 'url' => '#pricing'],
-        ['name' => 'Testimoni', 'url' => '#testimonials'],
-        ['name' => 'Kontak', 'url' => '#contact'],
+        ['name' => 'Beranda', 'url' => '/', 'route' => 'home'],
+        ['name' => 'Transaksi', 'url' => '/cek-pemesanan', 'route' => 'cek-pemesanan'],
+        ['name' => 'Karya Alumni', 'url' => '/karya-alumni', 'route' => 'karya-alumni'],
+        ['name' => 'Blog', 'url' => 'https://blog.ptcindonesia.co.id/', 'route' => ''],
+        ['name' => 'Cek Sertifikat', 'url' => '/verifikasi-sertifikat', 'route' => 'verifikasi-sertifikat'],
+        ['name' => 'Jadi Trainer', 'url' => 'https://docs.google.com/forms/d/e/1FAIpQLSdCiGXtNFHs6XYxZVoaB3l8aD89tkTadjGI2KFswrJ5EFLG8Q/viewform', 'route' => ''],
     ],
-    'ctaText' => 'Mulai Sekarang',
-    'ctaUrl' => '#',
     'isSticky' => true
 ])
 
-<nav class="{{ $isSticky ? 'fixed top-0 left-0 right-0' : '' }} bg-white/80 backdrop-blur-md shadow-sm z-50 border-b border-gray-100">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            {{-- Logo --}}
-            <div class="flex items-center">
-                <a href="{{ $logoUrl }}" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition">
-                    {{ $logo }}
-                </a>
-            </div>
+<header class="{{ $isSticky ? 'nav-glass sticky top-0 z-50' : 'nav-glass' }}">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-8 h-[64px] flex items-center justify-between gap-4">
+        
+        {{-- Logo --}}
+        <a href="/" class="flex items-center flex-shrink-0">
+            <img src="{{ $logoMobile }}" alt="MoKursus" class="h-9 md:hidden" />
+            <img src="{{ $logoDesktop }}" alt="MoKursus" class="h-9 hidden md:block" />
+        </a>
 
-            {{-- Desktop Menu --}}
-            <div class="hidden md:flex items-center space-x-8">
-                @foreach($menuItems as $item)
-                <a href="{{ $item['url'] }}" 
-                   class="text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                    {{ $item['name'] }}
-                </a>
-                @endforeach
-            </div>
+        {{-- Desktop Nav --}}
+        <nav class="hidden lg:flex items-center gap-6">
+            @foreach($menuItems as $item)
+            <a href="{{ $item['url'] }}" 
+               class="text-[13px] font-semibold {{ request()->routeIs($item['route']) ? 'text-ptc-blue border-b-2 border-ptc-blue' : 'text-slate-700 hover:text-ptc-blue' }} transition-colors">
+                {{ $item['name'] }}
+            </a>
+            @endforeach
+        </nav>
 
-            {{-- Desktop CTA Button --}}
-            <div class="hidden md:block">
-                <x-common.button 
-                    :href="$ctaUrl" 
-                    variant="primary"
-                    size="md">
-                    {{ $ctaText }}
-                </x-common.button>
-            </div>
+        {{-- Desktop CTAs --}}
+        <div class="hidden lg:flex items-center gap-2">
+            <a href="/login" class="text-[12px] font-semibold text-ptc-blue border border-ptc-blue/30 rounded-lg px-4 py-2 hover:bg-blue-50 transition-colors">
+                Masuk
+            </a>
+            <a href="/login" class="text-[12px] font-bold text-white bg-ptc-gradient rounded-lg px-4 py-2 shadow-md shadow-ptc-blue/25 hover:opacity-90 transition-opacity whitespace-nowrap">
+                Daftar Sekarang
+            </a>
+        </div>
 
-            {{-- Mobile Menu Button --}}
-            <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        {{-- Mobile/Tablet: CTA + hamburger --}}
+        <div class="flex lg:hidden items-center gap-2">
+            <a href="/login" class="text-[12px] font-bold text-white bg-ptc-gradient rounded-lg px-3 py-2 shadow-md hover:opacity-90 transition-opacity whitespace-nowrap">
+                Daftar
+            </a>
+            <button id="hamburger" class="p-2 rounded-lg border border-slate-200 hover:bg-slate-50" onclick="toggleMobileMenu()">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
         </div>
     </div>
 
-    {{-- Mobile Menu Dropdown --}}
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 py-4">
-        <div class="flex flex-col space-y-3 px-4">
+    {{-- Mobile menu --}}
+    <div id="mobile-menu" class="lg:hidden border-t border-slate-100 bg-white">
+        <div class="max-w-[1280px] mx-auto px-4 py-4 flex flex-col gap-1">
             @foreach($menuItems as $item)
             <a href="{{ $item['url'] }}" 
-               class="text-gray-700 hover:text-blue-600 transition-colors py-2">
+               class="py-2.5 px-3 text-[14px] font-semibold text-slate-700 hover:text-ptc-blue hover:bg-blue-50 rounded-lg transition-colors">
                 {{ $item['name'] }}
             </a>
             @endforeach
-            <div class="pt-2">
-                <x-common.button 
-                    :href="$ctaUrl" 
-                    variant="primary"
-                    size="sm"
-                    class="w-full text-center">
-                    {{ $ctaText }}
-                </x-common.button>
+            <div class="border-t border-slate-100 mt-2 pt-3">
+                <a href="/login" class="block py-2.5 px-3 text-[14px] font-semibold text-ptc-blue hover:bg-blue-50 rounded-lg transition-colors">
+                    Masuk
+                </a>
             </div>
         </div>
     </div>
-</nav>
+</header>
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (menuButton && mobileMenu) {
-            menuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
+    function toggleMobileMenu() {
+        document.getElementById('mobile-menu').classList.toggle('open');
+    }
+    
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.remove('open');
+        });
     });
 </script>
 @endpush

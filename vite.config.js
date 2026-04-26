@@ -10,6 +10,7 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    base: process.env.APP_ENV === 'production' ? 'https://mokursus.hazzi-dev.my.id/public/build/': '/',
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],
