@@ -17,6 +17,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Foreign key ke roles (One-to-One)
+            $table->foreignId('role_id')
+                  ->constrained('roles')
+                  ->onDelete('cascade');
+            
+            $table->bigInt('balance')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

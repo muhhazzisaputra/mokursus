@@ -14,6 +14,9 @@
     @stack('styles')
 </head>
 <body>
+    <div style="display: none">
+        {{ print_r(auth()->user()) }}
+    </div>
     <!-- SPINNER -->
     <div id="page-spinner">
         <!-- <img src="logo-sekunder.png" alt="" style="height:40px;margin-bottom:4px;" onerror="this.style.display='none'"/> -->

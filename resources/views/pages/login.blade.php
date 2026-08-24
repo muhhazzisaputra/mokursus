@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>MoKursus - Masuk / Daftar</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -156,7 +157,7 @@
                       <svg class="eye-icon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     </button>
                   </div>
-                  <div class="err-msg" id="login-pw-err">Password minimal 6 karakter.</div>
+                  <div class="err-msg" id="login-pw-err">Password minimal 8 karakter.</div>
                 </div>
 
                 <!-- Submit -->
@@ -188,7 +189,7 @@
                 <!-- Nama Lengkap -->
                 <div>
                   <div class="input-wrap">
-                    <input type="text" id="reg-name" class="input-field" placeholder="Nama Lengkap" autocomplete="name" />
+                    <input type="text" name="nama_lengkap" id="reg-name" class="input-field" placeholder="Nama Lengkap" autocomplete="name" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                   </div>
                   <div class="err-msg" id="reg-name-err">Nama tidak boleh kosong.</div>
@@ -198,14 +199,14 @@
                 <div class="grid grid-cols-2 gap-2.5">
                   <div>
                     <div class="input-wrap">
-                      <input type="text" id="reg-pob" class="input-field" placeholder="Tempat Lahir" />
+                      <input type="text" name="tempat_lahir" id="reg-pob" class="input-field" placeholder="Tempat Lahir" />
                       <svg class="input-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div class="err-msg" id="reg-pob-err">Wajib diisi.</div>
                   </div>
                   <div>
                     <div class="input-wrap">
-                      <input type="date" id="reg-dob" class="input-field no-icon" style="padding-left:14px;color:#94a3b8;" onchange="this.style.color='#0f172a'" />
+                      <input type="date" name="tanggal_lahir" id="reg-dob" class="input-field no-icon" style="padding-left:14px;color:#94a3b8;" onchange="this.style.color='#0f172a'" />
                     </div>
                     <div class="err-msg" id="reg-dob-err">Wajib diisi.</div>
                   </div>
@@ -214,7 +215,7 @@
                 <!-- Alamat -->
                 <div>
                   <div class="input-wrap">
-                    <input type="text" id="reg-address" class="input-field" placeholder="Alamat Lengkap" autocomplete="street-address" />
+                    <input type="text"  name="alamat" id="reg-address" class="input-field" placeholder="Alamat Lengkap" autocomplete="street-address" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                   </div>
                   <div class="err-msg" id="reg-addr-err">Alamat tidak boleh kosong.</div>
@@ -223,7 +224,7 @@
                 <!-- No. WhatsApp -->
                 <div>
                   <div class="input-wrap">
-                    <input type="tel" id="reg-phone" class="input-field" placeholder="No. WhatsApp / HP Min 10 karakter*" autocomplete="tel" />
+                    <input type="tel" name="nomor_whatsapp" id="reg-phone" class="input-field" placeholder="No. WhatsApp / HP Min 10 karakter*" autocomplete="tel" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                   </div>
                   <div class="err-msg" id="reg-phone-err">Nomor HP minimal 10 karakter.</div>
@@ -232,7 +233,7 @@
                 <!-- Email -->
                 <div>
                   <div class="input-wrap">
-                    <input type="email" id="reg-email" class="input-field" placeholder="Email aktif..." autocomplete="email" />
+                    <input type="email" name="email" id="reg-email" class="input-field" placeholder="Email aktif..." autocomplete="email" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                   </div>
                   <div class="err-msg" id="reg-email-err">Masukkan email yang valid.</div>
@@ -242,7 +243,7 @@
                 <div>
                   <div class="input-wrap">
                     <!-- <input type="password" id="reg-pw" class="input-field" placeholder="Password" autocomplete="new-password" oninput="checkStrength(this.value)" /> -->
-                    <input type="password" id="reg-pw" class="input-field" placeholder="Password" autocomplete="new-password" />
+                    <input type="password" name="password" id="reg-pw" class="input-field" placeholder="Password" autocomplete="new-password" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                     <button type="button" class="pw-toggle" onclick="togglePw('reg-pw',this)" title="Tampilkan/sembunyikan password">
                       <svg class="eye-icon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -262,7 +263,7 @@
                 <!-- Konfirmasi Password -->
                 <div>
                   <div class="input-wrap">
-                    <input type="password" id="reg-pw2" class="input-field" placeholder="Konfirmasi Password" autocomplete="new-password" />
+                    <input type="password" name="password2" id="reg-pw2" class="input-field" placeholder="Konfirmasi Password" autocomplete="new-password" />
                     <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     <button type="button" class="pw-toggle" onclick="togglePw('reg-pw2',this)" title="Tampilkan/sembunyikan password">
                       <svg class="eye-icon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -511,16 +512,43 @@ function handleLogin() {
   let err = false;
   if (!isEmail(email)) err = fieldErr("login-email","login-email-err",true)||true;
   else fieldErr("login-email","login-email-err",false);
-  if (pw.length < 6) err = fieldErr("login-pw","login-pw-err",true)||true;
+  if (pw.length < 8) err = fieldErr("login-pw","login-pw-err",true)||true;
   else fieldErr("login-pw","login-pw-err",false);
 
   if (err) { shake("login-form"); return; }
 
   setLoad("login", true);
-  setTimeout(() => {
-    setLoad("login", false);
-    alert("Login berhasil! (Demo — hubungkan ke backend)");
-  }, 1800);
+//   setTimeout(() => {
+//     setLoad("login", false);
+//     alert("Login berhasil! (Demo — hubungkan ke backend)");
+//   }, 1800);
+	  // AJAX Login Request
+	fetch('/login_process', {
+		method : 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+		},
+		body: JSON.stringify({
+			email   : email,
+			password: pw
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		setLoad("login", false);
+			if (data.success) {
+				window.location.href = '/blank';
+				alert('Login berhasil');
+			} else {
+				alert(data.message || "Login gagal! Periksa email dan password Anda.");
+			}
+	})
+	.catch(error => {
+		setLoad("login", false);
+		console.error('Error:', error);
+		alert("Terjadi kesalahan. Silakan coba lagi.");
+	});
 }
 
 // ── reCAPTCHA simulasi ──
@@ -580,11 +608,55 @@ function handleRegister() {
 
   if (err) { shake("reg-form"); return; }
 
-  setLoad("reg", true);
-  setTimeout(() => {
-    setLoad("reg", false);
-    switchView("reg-ok");
-  }, 2000);
+	// setLoad("reg", true);
+	// setTimeout(() => {
+	// 	setLoad("reg", false);
+	// 	switchView("reg-ok");
+	// }, 2000);
+
+	// AJAX Register Request
+  	fetch('/register', {
+		method : 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+		},
+		body: JSON.stringify({
+			nama_lengkap         : name,
+			tempat_lahir         : pob,
+			tanggal_lahir        : dob,
+			alamat               : address,
+			nomor_whatsapp       : phone,
+			email                : email,
+			password             : pw,
+			password_confirmation: pw2
+		})
+  	})
+	.then(response => response.json())
+	.then(data => {
+		setLoad("reg", false);
+		if (data.success) {
+		// Reset form
+		document.getElementById("reg-form").reset();
+		document.getElementById("reg-captcha").checked = false;
+		verifyCaptcha(document.getElementById("reg-captcha"));
+		
+		// Show success panel
+		switchView("reg-ok");
+		} else {
+		// Show error message from server
+		let errorMsg = data.message || "Registrasi gagal!";
+		if (data.errors) {
+			errorMsg = Object.values(data.errors).flat().join('\n');
+		}
+		alert(errorMsg);
+		}
+	})
+	.catch(error => {
+		setLoad("reg", false);
+		console.error('Error:', error);
+		alert("Terjadi kesalahan. Silakan coba lagi.");
+	});
 }
 
 // ── Forgot ──

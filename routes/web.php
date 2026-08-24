@@ -1,6 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\TrainerController;
+use App\Http\Controllers\Admin\AlumniController;
+use App\Http\Controllers\Admin\WorkController;
+use App\Http\Controllers\Admin\PromotionController;
 
 Route::get('/laravel', function () {
     return view('welcome');
@@ -13,6 +20,8 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('pages.login');
 })->name('login');
+
+
 
 Route::get('/pendaftaran-online', function () {
     return view('pages.pendaftaran_online');
@@ -37,3 +46,43 @@ Route::get('/karya-alumni', function () {
 Route::get('/verifikasi-sertifikat', function () {
     return view('pages.verifikasi_sertifikat');
 })->name('verifikasi-sertifikat');
+
+Route::get('/blank', function () {
+    return view('pages.admin.blank');
+})->name('blank');
+
+Route::get('/test', function () {
+    return view('test');
+})->name('test');
+
+Route::get('/modals', function () {
+    return view('pages.modals');
+})->name('modals');
+
+Route::post('/register', [AuthController::class, 'register'])->name('register-process');
+Route::post('/login_process', [AuthController::class, 'login'])->name('login-process');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// routes/web.php - Tambahkan prefix admin
+Route::prefix('admin')->group(function () {
+    Route::resource('users', UserController::class);
+    Route::get('users-data', [UserController::class, 'getData'])->name('users.data');
+
+    Route::resource('courses', CourseController::class);
+    Route::get('courses-data', [CourseController::class, 'getData'])->name('courses.data');
+
+    Route::resource('trainers', TrainerController::class);
+    Route::get('trainers-data', [TrainerController::class, 'getData'])->name('trainers.data');
+    Route::get('trainers-test', [TrainerController::class, 'test'])->name('trainers.test');
+
+    Route::resource('alumni', AlumniController::class);
+    Route::get('alumni-data', [AlumniController::class, 'getData'])->name('alumni.data');
+    Route::get('alumni-search-member', [AlumniController::class, 'searchMember'])->name('alumni.search');
+
+    Route::resource('works', WorkController::class);
+    Route::get('work-data', [WorkController::class, 'getData'])->name('works.data');
+    Route::get('work-search-member', [WorkController::class, 'searchMember'])->name('works.search');
+
+    Route::resource('promotions', PromotionController::class);
+    Route::get('promotion-data', [PromotionController::class, 'getData'])->name('promotions.data');
+});

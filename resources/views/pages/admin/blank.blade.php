@@ -1,0 +1,923 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="grid grid-cols-1 gap-6">
+    <!-- Card -->
+    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <!-- Card Header -->
+        <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-100 dark:border-gray-800">
+            id: {{ auth()->id() }},
+            name: {{ auth()->user()->name }},
+            role: {{ auth()->user()->role->name }}
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                        Daftar Program Kursus
+                    </h3>
+                </div>
+                <div>
+                    <button class="inline-flex items-center justify-center font-medium gap-2 rounded-lg transition px-4 py-3 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300" 
+                            type="button" 
+                            @click="$dispatch('open-form-in-modal')">
+                        Tambah Program Kursus
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+            <div class="space-y-6">
+                <div class="overflow-hidden" x-data="courseTable()">
+                    <!-- Header Controls -->
+                    <div class="flex flex-col gap-2 py-4 rounded-b-none border-b-0 px-4 sm:flex-row sm:items-center rounded-xl border border-gray-100 sm:justify-between dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-500 dark:text-gray-400">Show</span>
+                            <div class="relative">
+                                <select
+                                    x-model="perPage"
+                                    class="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                                >
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <span class="absolute z-30 text-gray-500 -translate-y-1/2 right-2 top-1/2 dark:text-gray-400">
+                                    <svg class="stroke-current" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165" stroke="" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="text-gray-500 dark:text-gray-400">entries</span>
+                        </div>
+
+                        <div class="relative">
+                            <input
+                                x-model="search"
+                                type="text"
+                                placeholder="Search..."
+                                class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
+                            />
+                            <button class="absolute text-gray-500 -translate-y-1/2 left-4 top-1/2 dark:text-gray-400">
+                                <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3.04199 9.37363C3.04199 5.87693 5.87735 3.04199 9.37533 3.04199C12.8733 3.04199 15.7087 5.87693 15.7087 9.37363C15.7087 12.8703 12.8733 15.7053 9.37533 15.7053C5.87735 15.7053 3.04199 12.8703 3.04199 9.37363ZM9.37533 1.54199C5.04926 1.54199 1.54199 5.04817 1.54199 9.37363C1.54199 13.6991 5.04926 17.2053 9.37533 17.2053C11.2676 17.2053 13.0032 16.5344 14.3572 15.4176L17.1773 18.238C17.4702 18.5309 17.945 18.5309 18.2379 18.238C18.5308 17.9451 18.5309 17.4703 18.238 17.1773L15.4182 14.3573C16.5367 13.0033 17.2087 11.2669 17.2087 9.37363C17.2087 5.04817 13.7014 1.54199 9.37533 1.54199Z" fill="" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div x-show="isLoading" class="flex justify-center items-center py-8">
+                        <div class="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+
+                    <!-- Table -->
+                    <div x-show="!isLoading" class="max-w-full overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-left border border-gray-100 dark:border-white/[0.05] w-16">
+                                        <div class="flex items-center justify-between w-full cursor-pointer" @click="sortBy('id')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">No</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-left border border-gray-100 dark:border-white/[0.05] w-20">
+                                        <div class="flex items-center justify-between w-full cursor-pointer">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Gambar</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-left border border-gray-100 dark:border-white/[0.05]">
+                                        <div class="flex items-center justify-between w-full cursor-pointer" @click="sortBy('name')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Nama Program</p>
+                                            <span class="flex flex-col gap-0.5">
+                                                <svg class="fill-gray-300 dark:fill-gray-700" width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M4.40962 0.585167C4.21057 0.300808 3.78943 0.300807 3.59038 0.585166L1.05071 4.21327C0.81874 4.54466 1.05582 5 1.46033 5H6.53967C6.94418 5 7.18126 4.54466 6.94929 4.21327L4.40962 0.585167Z" fill="" />
+                                                </svg>
+                                                <svg class="fill-gray-300 dark:fill-gray-700" width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M4.40962 4.41483C4.21057 4.69919 3.78943 4.69919 3.59038 4.41483L1.05071 0.786732C0.81874 0.455343 1.05582 0 1.46033 0H6.53967C6.94418 0 7.18126 0.455342 6.94929 0.786731L4.40962 4.41483Z" fill="" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-right border border-gray-100 dark:border-white/[0.05]">
+                                        <div class="flex items-center justify-end w-full cursor-pointer" @click="sortBy('price')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Harga Online</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-right border border-gray-100 dark:border-white/[0.05]">
+                                        <div class="flex items-center justify-end w-full cursor-pointer" @click="sortBy('offline_price')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Harga Reguler</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-right border border-gray-100 dark:border-white/[0.05]">
+                                        <div class="flex items-center justify-end w-full cursor-pointer" @click="sortBy('non_regular_price')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Harga Non Reg</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-right border border-gray-100 dark:border-white/[0.05]">
+                                        <div class="flex items-center justify-end w-full cursor-pointer" @click="sortBy('private_price')">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Harga Privat</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center border border-gray-100 dark:border-white/[0.05] w-24">
+                                        <div class="flex items-center justify-center w-full cursor-pointer">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Status</p>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center border border-gray-100 dark:border-white/[0.05] w-24">
+                                        <div class="flex items-center justify-center w-full cursor-pointer">
+                                            <p class="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Aksi</p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="(course, index) in paginatedData" :key="course.id">
+                                    <tr class="border-t border-gray-100 dark:border-white/[0.5]">
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-center">
+                                            <p class="text-theme-sm text-gray-700 dark:text-gray-400" x-text="startEntry + index"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-center">
+                                            <template x-if="course.image">
+                                                <img :src="'/' + course.image" class="w-10 h-10 object-cover rounded-lg mx-auto">
+                                            </template>
+                                            <template x-if="!course.image">
+                                                <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
+                                            <p class="text-theme-sm font-medium text-gray-800 dark:text-white/90" x-text="course.name"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-right">
+                                            <p class="text-theme-sm text-gray-700 dark:text-gray-400" x-text="formatRupiah(course.price)"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-right">
+                                            <p class="text-theme-sm text-gray-700 dark:text-gray-400" x-text="formatRupiah(course.offline_price)"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-right">
+                                            <p class="text-theme-sm text-gray-700 dark:text-gray-400" x-text="formatRupiah(course.non_regular_price)"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-right">
+                                            <p class="text-theme-sm text-gray-700 dark:text-gray-400" x-text="formatRupiah(course.private_price)"></p>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-center">
+                                            <span x-html="getStatusBadge(course.is_active)"></span>
+                                        </td>
+                                        <td class="px-4 py-3 border border-gray-100 dark:border-white/[0.05] text-center">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <button @click="editRow(course.id)" class="text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500" title="Edit">
+                                                    <svg class="fill-current" width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0911 3.53206C16.2124 2.65338 14.7878 2.65338 13.9091 3.53206L5.6074 11.8337C5.29899 12.1421 5.08687 12.5335 4.99684 12.9603L4.26177 16.445C4.20943 16.6931 4.286 16.9508 4.46529 17.1301C4.64458 17.3094 4.90232 17.3859 5.15042 17.3336L8.63507 16.5985C9.06184 16.5085 9.45324 16.2964 9.76165 15.988L18.0633 7.68631C18.942 6.80763 18.942 5.38301 18.0633 4.50433L17.0911 3.53206ZM14.9697 4.59272C15.2626 4.29982 15.7375 4.29982 16.0304 4.59272L17.0027 5.56499C17.2956 5.85788 17.2956 6.33276 17.0027 6.62565L16.1043 7.52402L14.0714 5.49109L14.9697 4.59272ZM13.0107 6.55175L6.66806 12.8944C6.56526 12.9972 6.49455 13.1277 6.46454 13.2699L5.96704 15.6283L8.32547 15.1308C8.46772 15.1008 8.59819 15.0301 8.70099 14.9273L15.0436 8.58468L13.0107 6.55175Z" fill="currentColor" />
+                                                    </svg>
+                                                </button>
+                                                <button @click="deleteRow(course.id)" class="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500" title="Hapus">
+                                                    <svg class="fill-current" width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.04142 4.29199C7.04142 3.04935 8.04878 2.04199 9.29142 2.04199H11.7081C12.9507 2.04199 13.9581 3.04935 13.9581 4.29199V4.54199H16.1252H17.166C17.5802 4.54199 17.916 4.87778 17.916 5.29199C17.916 5.70621 17.5802 6.04199 17.166 6.04199H16.8752V8.74687V13.7469V16.7087C16.8752 17.9513 15.8678 18.9587 14.6252 18.9587H6.37516C5.13252 18.9587 4.12516 17.9513 4.12516 16.7087V13.7469V8.74687V6.04199H3.8335C3.41928 6.04199 3.0835 5.70621 3.0835 5.29199C3.0835 4.87778 3.41928 4.54199 3.8335 4.54199H4.87516H7.04142V4.29199ZM15.3752 13.7469V8.74687V6.04199H13.9581H13.2081H7.79142H7.04142H5.62516V8.74687V13.7469V16.7087C5.62516 17.1229 5.96095 17.4587 6.37516 17.4587H14.6252C15.0394 17.4587 15.3752 17.1229 15.3752 16.7087V13.7469ZM8.54142 4.54199H12.4581V4.29199C12.4581 3.87778 12.1223 3.54199 11.7081 3.54199H9.29142C8.87721 3.54199 8.54142 3.87778 8.54142 4.29199V4.54199ZM8.8335 8.50033C9.24771 8.50033 9.5835 8.83611 9.5835 9.25033V14.2503C9.5835 14.6645 9.24771 15.0003 8.8335 15.0003C8.41928 15.0003 8.0835 14.6645 8.0835 14.2503V9.25033C8.0835 8.83611 8.41928 8.50033 8.8335 8.50033ZM12.9168 9.25033C12.9168 8.83611 12.581 8.50033 12.1668 8.50033C11.7526 8.50033 11.4168 8.83611 11.4168 9.25033V14.2503C11.4168 14.6645 11.7526 15.0003 12.1668 15.0003C12.581 15.0003 12.9168 14.6645 12.9168 14.2503V9.25033Z" fill="currentColor" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr x-show="paginatedData.length === 0">
+                                    <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        Tidak ada data yang ditemukan
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div class="border-t-0 border rounded-b-xl border-gray-100 py-4 pl-[18px] pr-4 dark:border-white/[0.05]">
+                        <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between">
+                            <p class="pt-3 text-sm font-medium text-center text-gray-500 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-t-0 xl:pt-0 xl:text-left">
+                                Showing <span x-text="startEntry"></span> to <span x-text="endEntry"></span> of <span x-text="totalFiltered"></span> entries
+                            </p>
+                            <div class="flex items-center justify-center gap-0.5 xl:justify-normal xl:pt-0">
+                                <button @click="prevPage" :disabled="currentPage === 1" class="mr-2.5 flex items-center h-10 justify-center rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                                    Previous
+                                </button>
+
+                                <button @click="goToPage(1)" :class="currentPage === 1 ? 'bg-blue-500/[0.08] text-brand-500' : 'text-gray-700 dark:text-gray-400'" class="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium hover:bg-blue-500/[0.08] hover:text-brand-500 dark:hover:text-brand-500">
+                                    1
+                                </button>
+
+                                <span x-show="currentPage > 3" class="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-500/[0.08] hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500">...</span>
+
+                                <template x-for="page in pagesAroundCurrent" :key="page">
+                                    <button @click="goToPage(page)" :class="currentPage === page ? 'bg-blue-500/[0.08] text-brand-500' : 'text-gray-700 dark:text-gray-400'" class="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium hover:bg-blue-500/[0.08] hover:text-brand-500 dark:hover:text-brand-500" x-text="page"></button>
+                                </template>
+
+                                <span x-show="currentPage < totalPages - 2" class="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-500/[0.08] hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500">...</span>
+
+                                <button x-show="totalPages > 1" @click="goToPage(totalPages)" :class="currentPage === totalPages ? 'bg-blue-500/[0.08] text-brand-500' : 'text-gray-700 dark:text-gray-400'" class="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium hover:bg-blue-500/[0.08] hover:text-brand-500 dark:hover:text-brand-500" x-text="totalPages"></button>
+
+                                <button @click="nextPage" :disabled="currentPage === totalPages" class="ml-2.5 flex items-center h-10 justify-center rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modalContainer" x-data="{
+    open: false,
+    init() {
+        this.$watch('open', value => {
+            if (value) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'unset';
+            }
+        });
+
+        // Event listener untuk membuka modal
+        window.addEventListener('open-form-in-modal', () => {
+            this.open = true;
+            resetForm();
+        });
+        
+        // Event listener untuk menutup modal
+        window.addEventListener('close-form-in-modal', () => {
+            this.open = false;
+        });
+    }
+}" 
+x-show="open" 
+@keydown.escape.window="open = false" 
+class="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5" 
+@open-form-in-modal.window="open = true; resetForm()" 
+style="display: none;">
+
+    <!-- Backdrop -->
+    <div @click="open = false" class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" 
+            x-transition:enter="transition ease-out duration-300" 
+            x-transition:enter-start="opacity-0" 
+            x-transition:enter-end="opacity-100" 
+            x-transition:leave="transition ease-in duration-200" 
+            x-transition:leave-start="opacity-100" 
+            x-transition:leave-end="opacity-0">
+    </div>
+
+    <!-- Modal Content -->
+    <div @click.stop="" class="relative w-full rounded-3xl bg-white dark:bg-gray-900 max-w-[584px]" 
+            x-transition:enter="transition ease-out duration-300" 
+            x-transition:enter-start="opacity-0 transform scale-95" 
+            x-transition:enter-end="opacity-100 transform scale-100" 
+            x-transition:leave="transition ease-in duration-200" 
+            x-transition:leave-start="opacity-100 transform scale-100" 
+            x-transition:leave-end="opacity-0 transform scale-95">
+
+        <!-- Close Button -->
+        <button @click="open = false" class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z" fill="currentColor"></path>
+            </svg>
+        </button>
+
+        <!-- Modal Body -->
+        <div class="relative w-full rounded-3xl bg-white p-4 dark:bg-gray-900 sm:p-6 lg:p-8 custom-scrollbar">
+            <form id="courseForm" autocomplete="off" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="course_id" name="course_id">
+                <input type="hidden" id="course_code" name="course_code">
+                
+                <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
+                    <span id="modal-title">Tambah Program Kursus</span>
+                </h4>
+
+                <!-- Grid 2 kolom untuk Nama Program dan Status -->
+                <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Nama Program <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="name" name="name" 
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                            placeholder="e.g., Web Development Bootcamp">
+                        <!-- <input type="text" value="demoemail" class="dark:bg-dark-900 border-error-300 shadow-theme-xs focus:border-error-300 focus:ring-error-500/10 dark:border-error-700 dark:focus:border-error-800 w-full rounded-lg border bg-transparent px-4 py-2.5 pr-10 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"> -->
+                        <div id="error-name" class="mokursus-error-msg"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Status
+                        </label>
+                        <select id="is_active" name="is_active"
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak aktif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabel Harga per Kategori - Mobile Friendly -->
+                <div class="mb-6">
+                    <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div class="min-w-[480px] sm:min-w-full">
+                            <table class="w-full border-collapse table-fixed">
+                                <thead>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <th class="py-3 px-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 w-[98px]">
+                                            Kategori
+                                        </th>
+                                        <th class="py-3 px-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 w-[109px]">
+                                            Online
+                                        </th>
+                                        <th class="py-3 px-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 w-[109px]">
+                                            Offline
+                                        </th>
+                                        <th class="py-3 px-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 w-[109px]">
+                                            Non Reg
+                                        </th>
+                                        <th class="py-3 px-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 w-[109px]">
+                                            Privat
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Baris Harga -->
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-3 px-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Harga
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="price" name="price" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                            <div id="error-price" class="mokursus-error-msg text-left"></div>
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="offline_price" name="offline_price" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="non_regular_price" name="non_regular_price" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="private_price" name="private_price" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                    </tr>
+
+                                    <!-- Baris Diskon -->
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-3 px-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Diskon
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="discount" name="discount" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="offline_discount" name="offline_discount" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="non_regular_discount" name="non_regular_discount" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="private_discount" name="private_discount" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                    </tr>
+
+                                    <!-- Baris Pajak -->
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <td class="py-3 px-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Pajak
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="tax" name="tax" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="offline_tax" name="offline_tax" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="non_regular_tax" name="non_regular_tax" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                        <td class="py-3 px-3">
+                                            <input type="text" id="private_tax" name="private_tax" 
+                                                class="format-number dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm text-gray-800 shadow-theme-xs text-right focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                                                placeholder="0"
+                                                onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gambar Kursus - Menggunakan Grid agar preview tetap di samping -->
+                <div class="mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Kolom Kiri: Label, Tombol, dan Keterangan -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Gambar Kursus
+                            </label>
+                            <div class="mt-2">
+                                <button type="button" onclick="document.getElementById('image').click()"
+                                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Pilih Foto
+                                </button>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG (Max 2MB)</p>
+                        </div>
+                        
+                        <!-- Kolom Kanan: Preview Gambar (tetap di samping) -->
+                        <div class="flex items-start">
+                            <div id="image-preview" class="hidden">
+                                <img id="preview-img" src="#" alt="Preview" class="h-16 w-16 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="image" name="image" accept="image/*" class="hidden">
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex flex-col-reverse gap-3 mt-8 sm:flex-row sm:items-center sm:justify-end">
+                    <button @click="open = false" type="button" 
+                        class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs transition-colors hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 sm:w-auto">
+                        Close
+                    </button>
+                    <button type="submit"
+                        class="flex w-full justify-center px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 sm:w-auto">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('courseTable', () => ({
+            search: '',
+            sortColumn: 'name',
+            sortDirection: 'asc',
+            currentPage: 1,
+            perPage: 10,
+            allData: [],
+            isLoading: false,
+            totalEntries: 0,
+            totalFiltered: 0,
+            lastPage: 1,
+
+            init() {
+                this.loadData();
+                this.$watch('perPage', () => { this.currentPage = 1; this.loadData(); });
+                this.$watch('search', () => { this.currentPage = 1; this.loadData(); });
+                this.$watch('sortColumn', () => this.loadData());
+                this.$watch('sortDirection', () => this.loadData());
+            },
+
+            async loadData() {
+                this.isLoading = true;
+                try {
+                    const response = await fetch(`{{ route('courses.data') }}?search=${this.search}&sort_column=${this.sortColumn}&sort_direction=${this.sortDirection}&per_page=${this.perPage}&page=${this.currentPage}`);
+                    const data = await response.json();
+                    this.allData = data.data;
+                    this.totalEntries = data.recordsTotal;
+                    this.totalFiltered = data.recordsFiltered;
+                    this.currentPage = data.current_page;
+                    this.lastPage = data.last_page;
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showToast('Gagal memuat data', 'error');
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+
+            get filteredData() {
+                return this.allData;
+            },
+
+            get paginatedData() {
+                return this.filteredData;
+            },
+
+            get startEntry() {
+                return ((this.currentPage - 1) * this.perPage) + 1;
+            },
+
+            get endEntry() {
+                const end = this.currentPage * this.perPage;
+                return end > this.totalFiltered ? this.totalFiltered : end;
+            },
+
+            get totalPages() {
+                return Math.ceil(this.totalFiltered / this.perPage);
+            },
+
+            get pagesAroundCurrent() {
+                let pages = [];
+                const startPage = Math.max(2, this.currentPage - 2);
+                const endPage = Math.min(this.totalPages - 1, this.currentPage + 2);
+                for (let i = startPage; i <= endPage; i++) {
+                    pages.push(i);
+                }
+                return pages;
+            },
+
+            goToPage(page) {
+                if (page >= 1 && page <= this.totalPages) {
+                    this.currentPage = page;
+                    this.loadData();
+                }
+            },
+
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    this.loadData();
+                }
+            },
+
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.loadData();
+                }
+            },
+
+            sortBy(column) {
+                if (this.sortColumn === column) {
+                    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sortDirection = 'asc';
+                    this.sortColumn = column;
+                }
+                this.loadData();
+            },
+
+            formatRupiah(value) {
+                if (!value || value == 0) return '0';
+                return new Intl.NumberFormat('id-ID').format(value);
+            },
+
+            deleteRow(id) {
+                if (confirm('Apakah Anda yakin ingin menghapus kursus ini?')) {
+                    fetch(`/admin/courses/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast(data.message, 'success');
+                            this.loadData();
+                        } else {
+                            showToast(data.error || 'Gagal menghapus', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        showToast('Terjadi kesalahan', 'error');
+                    });
+                }
+            },
+
+            editRow(id) {
+                window.dispatchEvent(new CustomEvent('open-form-in-modal', { detail: { id: id } }));
+                if (typeof editCourse === 'function') {
+                    editCourse(id);
+                }
+            },
+
+            getStatusBadge(status) {
+                if (status) {
+                    return `<span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-500">Active</span>`;
+                }
+                return `<span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-500">Inactive</span>`;
+            }
+        }));
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Hapus error saat user mulai mengetik pada input
+        $(document).on('input', '#name', function() {
+            clearErrors()
+        });
+
+        // Event handler untuk input agar langsung terformat
+        $(document).ready(function() {
+            // Format semua input yang memiliki class format-number
+            $('.format-number').on('keyup', function() {
+                formatNumber(this);
+            }).on('blur', function() {
+                formatNumber(this);
+            });
+        });
+
+        $('#image').on('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview-img').attr('src', e.target.result);
+                    $('#image-preview').removeClass('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                $('#image-preview').addClass('hidden');
+            }
+        });
+
+        // Saat form disubmit, konversi format angka ke numeric
+        $('#courseForm').on('submit', function(e) {
+            e.preventDefault();
+
+            // Validasi
+            if (!validateForm()) {
+                return;
+            }
+            alert('ok');
+            var formData = new FormData(this);
+            var courseId = $('#course_id').val();
+            var url = courseId ? '/admin/courses/' + courseId : '/admin/courses';
+            
+            if (courseId) {
+                formData.append('_method', 'PUT');
+            }
+            
+            var submitBtn = $(this).find('button[type="submit"]');
+            var originalText = submitBtn.html();
+            submitBtn.html('<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> Saving...').prop('disabled', true);
+            
+            $.ajax({
+                url        : url,
+                type       : 'POST',
+                data       : formData,
+                processData: false,
+                contentType: false,
+                headers    : {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        closeModal()
+                        if (typeof loadData === 'function') {
+                            loadData();
+                        }
+                        
+                        // Tampilkan notifikasi
+                        if (typeof showToast === 'function') {
+                            showToast(response.message, 'success');
+                        } else {
+                            alert(response.message);
+                        }
+
+                        resetForm();
+                    }
+                },
+                error: function(xhr) {
+                    var error = xhr.responseJSON;
+                    
+                    var errorMessage = error?.error || error?.message || 'Terjadi kesalahan saat menyimpan data';
+                    showToast(errorMessage, 'error');
+                },
+                complete: function() {
+                    submitBtn.html(originalText).prop('disabled', false);
+                }
+            });
+        });
+    })
+
+    function editCourse(id) {
+        $.ajax({
+            url: '/admin/courses/' + id,
+            type: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    var course = response.data;
+                    $('#course_id').val(course.id);
+                    $('#name').val(course.name);
+                    $('#price').val(course.price);
+                    $('#discount').val(course.discount);
+                    $('#tax').val(course.tax);
+                    $('#offline_price').val(course.offline_price);
+                    $('#offline_discount').val(course.offline_discount);
+                    $('#offline_tax').val(course.offline_tax);
+                    $('#non_regular_price').val(course.non_regular_price);
+                    $('#non_regular_discount').val(course.non_regular_discount);
+                    $('#non_regular_tax').val(course.non_regular_tax);
+                    $('#private_price').val(course.private_price);
+                    $('#private_discount').val(course.private_discount);
+                    $('#private_tax').val(course.private_tax);
+                    $('#for_class').val(course.for_class);
+                    $('#is_active').val((course.is_active=='1') ? '1' : '0');
+                    
+                    if (course.image) {
+                        $('#preview-img').attr('src', '/' + course.image);
+                        $('#image-preview').removeClass('hidden');
+                    } else {
+                        $('#image-preview').addClass('hidden');
+                    }
+                    
+                    $('#modal-title').text('Edit Kursus');
+                    $('#courseModal').removeClass('hidden');
+                }
+            },
+            error: function() {
+                showToast('Gagal mengambil data kursus', 'error');
+            }
+        });
+    }
+
+    // Validasi form sebelum submit (client-side only)
+    function validateForm() {
+        clearErrors();
+        let isValid = true;
+        
+        // Validasi Nama Program (wajib diisi)
+        let name = $('#name').val().trim();
+        
+        if (name === '') {
+            showError('name','error-name','Nama Program wajib diisi');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    function closeModal() {
+        window.dispatchEvent(new CustomEvent('close-form-in-modal'));
+    }
+
+    // Fungsi untuk menampilkan error pada field tertentu
+    function showError(fieldId, errorId, message) {
+        // Style untuk input
+        $('#' + fieldId).css({
+            'border-color'    : '#ef4444',
+            'background-color': '#fef2f2'
+        });
+        
+        // Style untuk pesan error
+        $('#' + errorId).css({
+            'color'     : '#ef4444',
+            'font-size' : '12px',
+            'margin-top': '4px',
+            'display'   : 'block'
+        }).text(message);
+    }
+
+    // Fungsi untuk menghapus semua error
+    function clearErrors() {
+        $('#name').css({
+            'border-color': '',
+            'background-color': ''
+        });
+        $('#error-name').css('display', '').text('');
+        $('#label-name').css('color', '');
+    }
+
+    // Reset form
+    function resetForm() {
+        clearErrors();
+        $('#courseForm')[0].reset();
+        $('#course_id').val('');
+        $('#course_code').val('');
+        
+        // Reset semua input ke 0
+        $('#price, #offline_price, #non_regular_price, #private_price').val('');
+        $('#discount, #offline_discount, #non_regular_discount, #private_discount').val('');
+        $('#tax, #offline_tax, #non_regular_tax, #private_tax').val('');
+        
+        $('#image-preview').addClass('hidden');
+        $('#file-name').text('');
+        $('#preview-img').attr('src', '');
+        $('#modal-title').text('Tambah Program Kursus');
+    }
+
+    function formatNumber(input) {
+        // Hapus semua karakter selain angka, koma, dan titik
+        let value = input.value.replace(/[^\d,.]/g, '');
+        
+        // Pisahkan bagian desimal (setelah titik)
+        let decimalPart = '';
+        if (value.includes('.')) {
+            let parts = value.split('.');
+            decimalPart = '.' + parts.pop();
+            value = parts.join('');
+        }
+        
+        // Hapus semua koma yang ada
+        value = value.replace(/,/g, '');
+        
+        // Batasi maksimal 11 digit untuk bilangan bulat (99.999.999.999)
+        if (value.length > 11) {
+            value = value.slice(0, 11);
+        }
+        
+        // Jika kosong atau 0
+        if (value === '') {
+            input.value = '';
+            return;
+        }
+        
+        // Format dengan pemisah ribuan menggunakan koma
+        let formatted = '';
+        let numberStr = value.toString();
+        let length = numberStr.length;
+        
+        for (let i = 0; i < length; i++) {
+            if (i > 0 && (length - i) % 3 === 0) {
+                formatted += ',';
+            }
+            formatted += numberStr[i];
+        }
+        
+        input.value = formatted + decimalPart;
+    }
+
+    // Fungsi untuk mengambil nilai numeric dari input yang sudah diformat
+    function getRawNumber(formattedValue) {
+        if (!formattedValue) return '0';
+        // Hapus koma (pemisah ribuan), pertahankan titik untuk desimal
+        let raw = formattedValue.replace(/,/g, '');
+        // Jika hanya titik di akhir atau tidak ada angka setelah titik
+        if (raw === '.') return '0';
+        return raw;
+    }
+
+    // Format angka untuk display dari nilai numeric
+    function formatNumberDisplay(angka) {
+        if (!angka || angka == 0) return '0';
+        
+        // Pisahkan desimal
+        let parts = angka.toString().split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts[1] ? '.' + parts[1] : '';
+        
+        // Format integer dengan koma
+        let formatted = '';
+        let length = integerPart.length;
+        for (let i = 0; i < length; i++) {
+            if (i > 0 && (length - i) % 3 === 0) {
+                formatted += ',';
+            }
+            formatted += integerPart[i];
+        }
+        
+        return formatted + decimalPart;
+    }
+
+    // Event handler saat input kehilangan fokus (blur)
+    function onBlurFormat(input) {
+        let value = input.value.replace(/[^\d]/g, '');
+        if (value === '' || value === '0') {
+            input.value = '';
+        } else {
+            formatNumber(input);
+        }
+    }
+</script>
+@endpush
