@@ -33,7 +33,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input type="text" placeholder="Search..." 
+                            <input x-model="search" type="text" placeholder="Search..." 
                                 class="h-[42px] w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-800 xl:w-[300px]">
                         </div>
                         <div class="flex items-center gap-3">
@@ -595,7 +595,6 @@ style="display: none;">
                     </div>
                 </div>
 
-                <!-- Field yang auto-fill setelah peserta dipilih -->
                 <div class="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2">
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Link (Opsional)</label>
@@ -703,7 +702,7 @@ document.addEventListener('alpine:init', () => {
             this.$watch('sortColumn', () => this.loadData());
             this.$watch('sortDirection', () => this.loadData());
 
-            window.addEventListener('user-data-updated', () => {
+            window.addEventListener('work-data-updated', () => {
                 this.loadData();
                 this.detailModal.open = false;
             });
@@ -941,7 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.dispatchEvent(new CustomEvent('close-form-in-modal'));
                     
                     // Refresh data
-                    window.dispatchEvent(new CustomEvent('user-data-updated'));
+                    window.dispatchEvent(new CustomEvent('work-data-updated'));
                     
                     // Tampilkan notifikasi
                     if (typeof showToast === 'function') {

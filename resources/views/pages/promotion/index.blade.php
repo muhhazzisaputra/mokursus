@@ -33,7 +33,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input type="text" placeholder="Search..." 
+                            <input x-model="search" type="text" placeholder="Search..." 
                                 class="h-[42px] w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-800 xl:w-[300px]">
                         </div>
                         <div class="flex items-center gap-3">
@@ -136,7 +136,7 @@
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0911 3.53206C16.2124 2.65338 14.7878 2.65338 13.9091 3.53206L5.6074 11.8337C5.29899 12.1421 5.08687 12.5335 4.99684 12.9603L4.26177 16.445C4.20943 16.6931 4.286 16.9508 4.46529 17.1301C4.64458 17.3094 4.90232 17.3859 5.15042 17.3336L8.63507 16.5985C9.06184 16.5085 9.45324 16.2964 9.76165 15.988L18.0633 7.68631C18.942 6.80763 18.942 5.38301 18.0633 4.50433L17.0911 3.53206ZM14.9697 4.59272C15.2626 4.29982 15.7375 4.29982 16.0304 4.59272L17.0027 5.56499C17.2956 5.85788 17.2956 6.33276 17.0027 6.62565L16.1043 7.52402L14.0714 5.49109L14.9697 4.59272ZM13.0107 6.55175L6.66806 12.8944C6.56526 12.9972 6.49455 13.1277 6.46454 13.2699L5.96704 15.6283L8.32547 15.1308C8.46772 15.1008 8.59819 15.0301 8.70099 14.9273L15.0436 8.58468L13.0107 6.55175Z" fill="currentColor" />
                                                     </svg>
                                                 </button>
-                                                <button @click="deleteRow(promo.id,promo.title)" class="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500" title="Hapus">
+                                                <button @click="deleteRow(promo.id,promo.name)" class="text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500" title="Hapus">
                                                     <svg class="fill-current" width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M7.04142 4.29199C7.04142 3.04935 8.04878 2.04199 9.29142 2.04199H11.7081C12.9507 2.04199 13.9581 3.04935 13.9581 4.29199V4.54199H16.1252H17.166C17.5802 4.54199 17.916 4.87778 17.916 5.29199C17.916 5.70621 17.5802 6.04199 17.166 6.04199H16.8752V8.74687V13.7469V16.7087C16.8752 17.9513 15.8678 18.9587 14.6252 18.9587H6.37516C5.13252 18.9587 4.12516 17.9513 4.12516 16.7087V13.7469V8.74687V6.04199H3.8335C3.41928 6.04199 3.0835 5.70621 3.0835 5.29199C3.0835 4.87778 3.41928 4.54199 3.8335 4.54199H4.87516H7.04142V4.29199ZM15.3752 13.7469V8.74687V6.04199H13.9581H13.2081H7.79142H7.04142H5.62516V8.74687V13.7469V16.7087C5.62516 17.1229 5.96095 17.4587 6.37516 17.4587H14.6252C15.0394 17.4587 15.3752 17.1229 15.3752 16.7087V13.7469ZM8.54142 4.54199H12.4581V4.29199C12.4581 3.87778 12.1223 3.54199 11.7081 3.54199H9.29142C8.87721 3.54199 8.54142 3.87778 8.54142 4.29199V4.54199ZM8.8335 8.50033C9.24771 8.50033 9.5835 8.83611 9.5835 9.25033V14.2503C9.5835 14.6645 9.24771 15.0003 8.8335 15.0003C8.41928 15.0003 8.0835 14.6645 8.0835 14.2503V9.25033C8.0835 8.83611 8.41928 8.50033 8.8335 8.50033ZM12.9168 9.25033C12.9168 8.83611 12.581 8.50033 12.1668 8.50033C11.7526 8.50033 11.4168 8.83611 11.4168 9.25033V14.2503C11.4168 14.6645 11.7526 15.0003 12.1668 15.0003C12.581 15.0003 12.9168 14.6645 12.9168 14.2503V9.25033Z" fill="currentColor" />
                                                     </svg>
@@ -185,6 +185,76 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Modal Konfirmasi Hapus -->
+                    <div
+                        x-show="deleteModal.open"
+                        @keydown.escape.window="deleteModal.open = false"
+                        class="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5"
+                        style="display: none;">
+                        <!-- Backdrop lebih ringan -->
+                        <div
+                            @click="deleteModal.open = false"
+                            class="fixed inset-0 h-full w-full bg-gray-900/30"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                        ></div>
+
+                        <!-- Hapus data, Modal Content - lebih kecil -->
+                        <div
+                            @click.stop=""
+                            class="relative w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl dark:bg-gray-900"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                        >
+                            <!-- Icon Danger - lebih kecil -->
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/15">
+                                <svg class="h-6 w-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+                                </svg>
+                            </div>
+
+                            <!-- Title & Message -->
+                            <div class="mt-3 text-center">
+                                <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                    Hapus Promo
+                                </h3>
+                                <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+                                    Hapus
+                                    <span class="font-medium text-gray-800 dark:text-white/90" x-text="'&quot;' + deleteModal.title + '&quot;'"></span>?
+                                    Tindakan ini tidak dapat dibatalkan.
+                                </p>
+                            </div>
+
+                            <!-- Footer Buttons -->
+                            <div class="mt-5 flex gap-3">
+                                <button
+                                    @click="deleteModal.open = false"
+                                    type="button"
+                                    class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    @click="confirmDelete()"
+                                    :disabled="deleteModal.loading"
+                                    type="button"
+                                    class="flex-1 flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    <span x-show="deleteModal.loading" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    <span x-text="deleteModal.loading ? 'Menghapus...' : 'Ya, Hapus'"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -192,6 +262,375 @@
     </div>
 </div>
 
+<!-- Modal Structure -->
+<div id="modalContainer" x-data="{
+    open: false,
+    init() {
+        this.$watch('open', value => {
+            if (value) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'unset';
+            }
+        });
+
+        // Event listener untuk membuka modal
+        window.addEventListener('open-form-in-modal', (e) => {
+            // Jika ada detail id, berarti mode edit
+            if (e.detail && e.detail.id) {
+                // Jangan reset form jika mode edit
+                this.open = true;
+            } else {
+                // Mode tambah
+                resetForm();
+                this.open = true;
+            }
+        });
+        
+        // Event listener untuk menutup modal
+        window.addEventListener('close-form-in-modal', () => {
+            this.open = false;
+        });
+    }
+}" 
+x-show="open" 
+@keydown.escape.window="open = false" 
+class="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto p-5" 
+@open-form-in-modal.window="open = true; resetForm()" 
+style="display: none;">
+
+    <!-- Backdrop -->
+    <div @click="open = false" class="fixed inset-0 h-full w-full bg-gray-900/30 backdrop-blur-[32px]" 
+            x-transition:enter="transition ease-out duration-300" 
+            x-transition:enter-start="opacity-0" 
+            x-transition:enter-end="opacity-100" 
+            x-transition:leave="transition ease-in duration-200" 
+            x-transition:leave-start="opacity-100" 
+            x-transition:leave-end="opacity-0">
+    </div>
+
+    <!-- Modal Content -->
+    <div @click.stop="" class="relative w-full rounded-3xl bg-white dark:bg-gray-900 max-w-[584px]" 
+            x-transition:enter="transition ease-out duration-300" 
+            x-transition:enter-start="opacity-0 transform scale-95" 
+            x-transition:enter-end="opacity-100 transform scale-100" 
+            x-transition:leave="transition ease-in duration-200" 
+            x-transition:leave-start="opacity-100 transform scale-100" 
+            x-transition:leave-end="opacity-0 transform scale-95">
+
+        <!-- Close Button -->
+        <button @click="open = false" class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z" fill="currentColor"></path>
+            </svg>
+        </button>
+
+        <!-- Modal Body -->
+        <div class="relative w-full rounded-3xl bg-white p-4 dark:bg-gray-900 sm:p-6 lg:p-8 custom-scrollbar">
+            <form id="promoForm" autocomplete="off" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="promo_id" name="promo_id" x-ref="promoId">
+
+                <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
+                    <span id="modal-title">Tambah Promo</span>
+                </h4>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <!-- Dropdown Peserta -->
+                    <div class="mb-4"
+                        x-data="{
+                            dropdownOpen   : false,
+                            dropdownSearch : '',
+                            dropdownResults: [],
+                            dropdownLoading: false,
+                            selectedId     : null,
+                            selectedName   : '',
+                            debounceTimer  : null,
+
+                            onSearch() {
+                                clearTimeout(this.debounceTimer);
+                                if (this.dropdownSearch.length === 0) {
+                                    this.dropdownResults   = [];
+                                    this.dropdownLoading = false;
+                                    return;
+                                }
+                                this.dropdownLoading    = true;
+                                this.debounceTimer = setTimeout(() => {
+                                    this.fetchData(this.dropdownSearch);
+                                }, 400);
+                            },
+
+                            async fetchData(keyword) {
+                                try {
+                                    const response = await fetch(`{{ route('promotions.search') }}?keyword=${encodeURIComponent(keyword)}`);
+                                    const data     = await response.json();
+                                    if (data.success) {
+                                        this.dropdownResults = data.data;
+                                    }
+                                } catch (error) {
+                                    console.error('Gagal mencari user:', error);
+                                } finally {
+                                    this.dropdownLoading = false;
+                                }
+                            },
+
+                            select(user) {
+                                this.selectedId      = user.id;
+                                this.selectedName    = user.name;
+                                this.dropdownSearch  = '';
+                                this.dropdownResults = [];
+                                this.dropdownOpen    = false;
+
+                                // Simpan id ke hidden input
+                                document.getElementById('user_id').value = user.id;
+                                clearError('dropdown-trigger-btn', 'error-nama-user')
+                            },
+
+                            openDropdown() {
+                                this.dropdownOpen    = true;
+                                this.dropdownSearch  = '';
+                                this.dropdownResults = [];
+                                this.$nextTick(() => this.$refs.searchInput.focus());
+                            },
+
+                            clearSelected() {
+                                this.selectedId      = null;
+                                this.selectedName    = '';
+                                this.dropdownSearch  = '';
+                                this.dropdownResults = [];
+                                document.getElementById('user_id').value        = '';
+                                this.$nextTick(() => this.$refs.searchInput.focus());
+                            },
+
+                            init() {
+                                window.addEventListener('set-user', (e) => {
+                                    console.log('set-user event received:', e.detail); // Debugging
+                                    
+                                    if (e.detail && e.detail.id) {
+                                        this.selectedId   = e.detail.id;
+                                        this.selectedName = e.detail.name || '';
+                                        document.getElementById('user_id').value = e.detail.id;
+                                        
+                                        // Update dropdown trigger text
+                                        const triggerSpan = this.$el.querySelector('.dropdown-trigger span');
+                                        if (triggerSpan) {
+                                            triggerSpan.textContent = e.detail.name || '';
+                                            triggerSpan.className = 'text-gray-800 dark:text-white/90 truncate';
+                                        }
+                                    } else {
+                                        this.selectedId = null;
+                                        this.selectedName = '';
+                                        document.getElementById('user_id').value = '';
+                                    }
+                                    
+                                    // Tutup dropdown
+                                    this.dropdownOpen = false;
+                                });
+
+                                window.addEventListener('reset-promo-form', () => {
+                                    this.dropdownOpen    = false;
+                                    this.dropdownSearch  = '';
+                                    this.dropdownResults = [];
+                                    this.selectedId      = null;
+                                    this.selectedName    = '';
+                                    clearTimeout(this.debounceTimer);
+                                });
+
+                                // Tutup dropdown saat klik di luar
+                                document.addEventListener('mousedown', (e) => {
+                                    if (this.dropdownOpen && !this.$el.contains(e.target)) {
+                                        this.dropdownOpen    = false;
+                                        this.dropdownSearch  = '';
+                                        this.dropdownResults = [];
+                                        this.dropdownLoading = false;
+                                        clearTimeout(this.debounceTimer);
+                                    }
+                                });
+
+                                // Watch untuk user_id changes
+                                this.$watch('selectedId', (value) => {
+                                    if (value) {
+                                        clearError('user_id', 'error-nama-user');
+                                    }
+                                });
+                            }
+                        }"
+                    >
+                    
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            User Promo <span class="text-red-500">*</span>
+                        </label>
+
+                        <input type="hidden" id="user_id" name="user_id" x-ref="userId" :value="selectedId">
+
+                        <!-- Trigger Button -->
+                        <button type="button" @click="openDropdown()" id="dropdown-trigger-btn"
+                            class="dropdown-trigger h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 text-sm text-left flex items-center justify-between gap-2 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                            :class="dropdownOpen ? 'border-brand-300 ring-2 ring-brand-500/10' : ''"
+                        >
+                            <span
+                                :class="selectedId ? 'text-gray-800 dark:text-white/90' : 'text-gray-400'"
+                                x-text="selectedId ? selectedName : 'Ketik nama user...'"
+                                class="truncate"
+                            ></span>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <span x-show="selectedId !== null" @click.stop="clearSelected()"
+                                    class="text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="dropdownOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div x-show="dropdownOpen"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="absolute z-50 mt-1 w-[300px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg overflow-hidden"
+                            style="display: none;"
+                        >
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-gray-100 dark:border-gray-800">
+                                <div class="relative">
+                                    <div class="absolute left-2.5 top-1/2 -translate-y-1/2">
+                                        <template x-if="dropdownLoading">
+                                            <span class="inline-block w-4 h-4 border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin"></span>
+                                        </template>
+                                        <template x-if="!dropdownLoading">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                    <input type="text" x-ref="searchInput" x-model="dropdownSearch"
+                                        @input="onSearch()" @keydown.enter.prevent=""
+                                        placeholder="Ketik nama user..."
+                                        class="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1.5 pl-8 pr-3 text-sm text-gray-800 dark:text-white/90 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10">
+                                </div>
+                            </div>
+
+                            <!-- Options List -->
+                            <ul class="max-h-52 overflow-y-auto py-1 custom-scrollbar">
+                                <template x-if="dropdownSearch.length === 0 && !dropdownLoading">
+                                    <li class="px-3 py-4 text-sm text-center text-gray-400">
+                                        Ketik nama use untuk mencari...
+                                    </li>
+                                </template>
+
+                                <template x-if="dropdownResults.length > 0">
+                                    <div>
+                                        <li class="px-3 py-1.5 text-xs text-gray-400 border-b border-gray-50 dark:border-gray-800">
+                                            Menampilkan <span class="font-medium text-gray-500" x-text="dropdownResults.length"></span> hasil
+                                            <template x-if="dropdownResults.length === 50">
+                                                <span> — maks. 50, persempit pencarian</span>
+                                            </template>
+                                        </li>
+                                        <template x-for="user in dropdownResults" :key="user.id">
+                                            <li>
+                                                <button type="button" @click="select(user)"
+                                                    class="w-full px-3 py-2.5 text-sm text-left flex items-center justify-between gap-2 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors"
+                                                    :class="selectedId == user.id
+                                                        ? 'text-brand-500 bg-brand-50 dark:bg-brand-500/10'
+                                                        : 'text-gray-700 dark:text-gray-300'"
+                                                >
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium" x-text="user.name"></span>
+                                                    </div>
+                                                    <svg x-show="selectedId == user.id" class="w-4 h-4 text-brand-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                </button>
+                                            </li>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <template x-if="dropdownSearch.length > 0 && dropdownResults.length === 0 && !dropdownLoading">
+                                    <li class="px-3 py-4 text-sm text-center text-gray-400">
+                                        Tidak ada hasil untuk "<span class="font-medium" x-text="dropdownSearch"></span>"
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                        <div id="error-nama-user" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kode Promo <span class="text-red-500">*</span></label>
+                        <input type="text" id="promo_code" name="promo_code" x-ref="title"
+                            class="h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 text-sm text-gray-800 dark:text-white/90 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                            placeholder="Kode Promo">
+                        <div id="error-kode" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nama Promo <span class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" x-ref="link"
+                            class="h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 text-sm text-gray-800 dark:text-white/90 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                            placeholder="">
+                        <div id="error-nama" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Tipe <span class="text-red-500">*</span></label>
+                        <select id="promo_type" name="promo_type"
+                            class="h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 text-sm text-gray-800 dark:text-white/90 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10 dark:bg-gray-900">
+                            <option value="Nominal">Nominal</option>
+                            <option value="Percent">Persen</option>
+                        </select>
+                        <div id="error-tipe" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-3">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nominal <span class="text-red-500">*</span></label>
+                        <input type="text" id="promo_value" name="promo_value" x-ref="link"
+                            class="h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 text-sm text-gray-800 dark:text-white/90 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                            placeholder="" onkeyup="formatNumber(this)" onblur="onBlurFormat(this)">
+                            <div id="error-nominal" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Tanggal Mulai <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="start_date" name="start_date"
+                            class="dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <div id="error-tgl-mulai" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            Tanggal Berakhir <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="end_date" name="end_date"
+                            class="dark:bg-dark-900 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <div id="error-tgl-berakhir" class="mokursus-error-msg mt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex flex-col-reverse gap-3 mt-6 sm:flex-row sm:items-center sm:justify-end">
+                    <button @click="open = false" type="button"
+                        class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto">
+                        Close
+                    </button>
+                    <button type="submit"
+                        class="flex w-full justify-center px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 hover:bg-brand-600 sm:w-auto">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -210,6 +649,13 @@ document.addEventListener('alpine:init', () => {
         totalFiltered: 0,
         lastPage     : 1,
 
+        deleteModal: {
+            open   : false,
+            id     : null,
+            name   : '',
+            loading: false
+        },
+
         init() {
             this.loadData();
             this.$watch('perPage', () => { this.currentPage = 1; this.loadData(); });
@@ -217,6 +663,10 @@ document.addEventListener('alpine:init', () => {
             this.$watch('statusFilter', () => { this.currentPage = 1; this.loadData(); });
             this.$watch('sortColumn', () => this.loadData());
             this.$watch('sortDirection', () => this.loadData());
+
+            window.addEventListener('promo-data-updated', () => {
+                this.loadData();
+            });
         },
 
         async loadData() {
@@ -259,6 +709,7 @@ document.addEventListener('alpine:init', () => {
                 this.loadData();
             }
         },
+
         nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.loadData(); } },
         prevPage() { if (this.currentPage > 1) { this.currentPage--; this.loadData(); } },
         sortBy(column) {
@@ -269,8 +720,302 @@ document.addEventListener('alpine:init', () => {
                 this.sortColumn    = column;
             }
             this.loadData();
+        },
+
+        async editRow(id) {
+            try {
+                this.isLoading = true;
+                
+                const response = await fetch(`/admin/promotions/${id}`);
+                const data     = await response.json();
+                
+                if (data.success) {
+                    const promo = data.data;
+                    
+                    console.log('Data promo:', promo); // Debugging
+                    
+                    // Update form values menggunakan jQuery (lebih reliable)
+                    $('#promo_id').val(promo.id);
+                    $('#user_id').val(promo.user_id);
+                    $('#promo_code').val(promo.promo_code);
+                    $('#name').val(promo.name);
+                    $('#promo_type').val(promo.promo_type);
+                    $('#promo_value').val(formatNumberDisplay(promo.promo_value));
+                    $('#start_date').val(promo.start_date);
+                    $('#end_date').val(promo.end_date);
+                    
+                    // Update modal title
+                    $('#modal-title').text('Edit Promo');
+                    
+                    // 🔥 UPDATE DROPDOWN PESERTA - kirim data ke Alpine dropdown
+                    window.dispatchEvent(new CustomEvent('set-user', {
+                        detail: {
+                            id  : promo.user_id,
+                            name: promo.user || ''
+                        }
+                    }));
+                    
+                    // Buka modal dengan mengirim ID
+                    window.dispatchEvent(new CustomEvent('open-form-in-modal', {
+                        detail: { id: promo.id }
+                    }));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('Gagal mengambil data promo', 'error');
+                }
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        deleteRow(id, name) {
+            this.deleteModal.id    = id;
+            this.deleteModal.title = name;
+            this.deleteModal.open  = true;
+        },
+
+        confirmDelete() {
+            this.deleteModal.loading = true;
+            fetch(`/admin/promotions/${this.deleteModal.id}`, {
+                method : 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    this.deleteModal.open = false;
+                    this.loadData();
+                } else {
+                    showToast(data.error || 'Gagal menghapus', 'error');
+                }
+            })
+            .catch(() => showToast('Terjadi kesalahan', 'error'))
+            .finally(() => { this.deleteModal.loading = false; });
         }
     }));
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Hapus error saat user mulai mengetik pada input
+    
+    $(document).on('input', '#promo_code, #name, #promo_type, #promo_value, #start_date, #end_date', function() {
+        const fieldId = $(this).attr('id');
+        const errorMap = {
+            'promo_code'          : 'error-kode',
+            'name'                : 'error-nama',
+            'promo_type'          : 'error-tipe',
+            'promo_value'         : 'error-nominal',
+            'start_date'          : 'error-tgl-mulai',
+            'end_date'            : 'error-tgl-berakhir'
+        };
+        
+        if (errorMap[fieldId]) {
+            clearError(fieldId, errorMap[fieldId]);
+        }
+    });
+
+    $('#image').on('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview-img').attr('src', e.target.result);
+                $('#image-preview').removeClass('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#image-preview').addClass('hidden');
+        }
+    });
+
+    $('#promoForm').on('submit', function(e) {
+        e.preventDefault();
+
+        // Validasi
+        if (!validateForm()) {
+            // Scroll ke field pertama yang error
+            $('.mokursus-error-msg:visible').first().closest('.grid, .mb-4, .mb-6').find('input, select, .dropdown-trigger').first().focus();
+            return;
+        }
+        
+        var formData = new FormData(this);
+        var promoId  = $('#promo_id').val();
+        var url      = promoId ? '/admin/promotions/' + promoId : '/admin/promotions';
+        
+        if (promoId) {
+            formData.append('_method', 'PUT');
+        }
+        
+        var submitBtn = $(this).find('button[type="submit"]');
+        var originalText = submitBtn.html();
+        submitBtn.html('<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span> Saving...').prop('disabled', true);
+        
+        $.ajax({
+            url        : url,
+            type       : 'POST',
+            data       : formData,
+            processData: false,
+            contentType: false,
+            headers    : {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Tutup modal
+                    window.dispatchEvent(new CustomEvent('close-form-in-modal'));
+                    
+                    // Refresh data
+                    window.dispatchEvent(new CustomEvent('promo-data-updated'));
+                    
+                    // Tampilkan notifikasi
+                    if (typeof showToast === 'function') {
+                        showToast(response.message, 'success');
+                    } else {
+                        alert(response.message);
+                    }
+
+                    resetForm();
+                }
+            },
+            error: function(xhr) {
+                var error = xhr.responseJSON;
+                
+                // Tampilkan error dari server
+                if (error && error.errors) {
+                    // Tampilkan error per field dari Laravel
+                    $.each(error.errors, function(field, messages) {
+                        const errorMap = {
+                            'member_id'  : 'error-nama-user',
+                            'title'      : 'error-title',
+                            'description': 'error-description'
+                        };
+                        
+                        if (errorMap[field]) {
+                            showError(field, errorMap[field], messages[0]);
+                        }
+                    });
+                } else {
+                    var errorMessage = error?.error || error?.message || 'Terjadi kesalahan saat menyimpan data';
+                    if (typeof showToast === 'function') {
+                        showToast(errorMessage, 'error');
+                    } else {
+                        alert(errorMessage);
+                    }
+                }
+            },
+            complete: function() {
+                submitBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // Validasi form sebelum submit (client-side only)
+    function validateForm() {
+        let isValid = true;
+        
+        // Clear semua error terlebih dahulu
+        clearAllErrors();
+        
+        let user_id = $('#user_id').val().trim();
+        if (user_id === '') {
+            showError('dropdown-trigger-btn', 'error-nama-user', 'User Promo harus dipilih.');
+            isValid = false;
+        }
+
+        let promo_code = $('#promo_code').val().trim();
+        if (promo_code === '') {
+            showError('promo_code', 'error-kode', 'Kode Promo harus diisi.');
+            isValid = false;
+        }
+
+        let name = $('#name').val().trim();
+        if (name === '') {
+            showError('name', 'error-nama', 'Nama Promo harus diisi.');
+            isValid = false;
+        }
+
+        let promo_type = $('#promo_type').val().trim();
+        if (promo_type === '') {
+            showError('promo_type', 'error-tipe', 'Tipe harus dipilih.');
+            isValid = false;
+        }
+
+        let promo_value = $('#promo_value').val().trim();
+        if (promo_value === '') {
+            showError('promo_value', 'error-nominal', 'Nominal harus diisi.');
+            isValid = false;
+        }
+
+        let start_date = $('#start_date').val().trim();
+        if (start_date === '') {
+            showError('start_date', 'error-tgl-mulai', 'Tanggal Mulai harus diisi.');
+            isValid = false;
+        }
+
+        let end_date = $('#end_date').val().trim();
+        if (end_date === '') {
+            showError('end_date', 'error-tgl-berakhir', 'Tanggal Berakhir harus diisi.');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+});
+
+// Fungsi untuk menampilkan error pada field tertentu
+function showError(fieldId, errorId, message) {
+    // Style untuk input
+    $('#' + fieldId).css({
+        'border-color'    : '#ef4444',
+        'background-color': '#fef2f2'
+    });
+    
+    // Style untuk pesan error
+    $('#' + errorId).css({
+        'color'     : '#ef4444',
+        'font-size' : '12px',
+        'margin-top': '4px',
+        'display'   : 'block'
+    }).text(message);
+}
+
+// Fungsi untuk menghapus error pada field tertentu (opsional)
+function clearError(fieldId, errorId) {
+    $('#' + fieldId).css({'border-color': '', 'background-color': ''});
+    $('#' + errorId).css('display', '').text('');
+}
+
+// Fungsi untuk menghapus semua error
+function clearAllErrors() {
+    // Reset semua field yang memiliki error
+    const fields   = ['dropdown-trigger-btn', 'promo_code', 'name', 'promo_type', 'promo_value', 'start_date', 'end_date'];
+    const errorIds = ['error-nama-user', 'error-kode', 'error-nama', 'error-tipe', 'error-nominal', 'error-tgl-mulai', 'error-tgl-berakhir'];
+    
+    fields.forEach(field => {
+        $('#' + field).css({'border-color': '', 'background-color': ''});
+    });
+    
+    errorIds.forEach(errorId => {
+        $('#' + errorId).css('display', '').text('');
+    });
+}
+
+function resetForm() {
+    // Jangan reset jika sedang edit (cek apakah promo_id terisi)
+    if ($('#promo_id').val()) {
+        // Sedang edit, jangan reset semua
+        return;
+    }
+
+    $('#promoForm')[0].reset();
+    // Clear semua error
+    clearAllErrors();
+}
 </script>
 @endpush

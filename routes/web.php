@@ -85,4 +85,5 @@ Route::prefix('admin')->group(function () {
 
     Route::resource('promotions', PromotionController::class);
     Route::get('promotion-data', [PromotionController::class, 'getData'])->name('promotions.data');
+    Route::get('promo-search-user', [PromotionController::class, 'searchUser'])->name('promotions.search');
 });
