@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\TrainerController;
 use App\Http\Controllers\Admin\AlumniController;
 use App\Http\Controllers\Admin\WorkController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\BonusController;
+use App\Http\Controllers\Admin\CourseGroupController;
 
 Route::get('/laravel', function () {
     return view('welcome');
@@ -86,4 +88,12 @@ Route::prefix('admin')->group(function () {
     Route::resource('promotions', PromotionController::class);
     Route::get('promotion-data', [PromotionController::class, 'getData'])->name('promotions.data');
     Route::get('promo-search-user', [PromotionController::class, 'searchUser'])->name('promotions.search');
+
+    Route::resource('bonuses', BonusController::class);
+    Route::get('bonus-data', [BonusController::class, 'getData'])->name('bonuses.data');
+    Route::get('bonus-search-user', [BonusController::class, 'searchUser'])->name('bonuses.search');
+    Route::get('bonus-search-member', [BonusController::class, 'searchMember'])->name('bonuses.search_member');
+
+    Route::resource('groups', CourseGroupController::class);
+    Route::get('group-data', [CourseGroupController::class, 'getData'])->name('groups.data');
 });

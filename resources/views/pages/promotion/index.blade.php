@@ -820,20 +820,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    $('#image').on('change', function() {
-        var file = this.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#preview-img').attr('src', e.target.result);
-                $('#image-preview').removeClass('hidden');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            $('#image-preview').addClass('hidden');
-        }
-    });
-
     $('#promoForm').on('submit', function(e) {
         e.preventDefault();
 

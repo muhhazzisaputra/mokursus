@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('bonuses', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
+
+            $table->foreignId('member_id')
+                  ->constrained('members')
+                  ->onDelete('cascade');
+
+            $table->integer('bonus_value');
+            $table->integer('user_input')->nullable();
+            $table->date('deleted_date')->nullable();
             $table->timestamps();
         });
     }

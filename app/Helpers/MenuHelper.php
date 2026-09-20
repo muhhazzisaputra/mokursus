@@ -49,6 +49,7 @@ class MenuHelper
                     ['name' => 'Alumni', 'path' => '/admin/alumni', 'pro' => false],
                     ['name' => 'Karya Alumni', 'path' => '/admin/works', 'pro' => false],
                     ['name' => 'Promo', 'path' => '/admin/promotions', 'pro' => false],
+                    ['name' => 'Bonus', 'path' => '/admin/bonuses', 'pro' => false],
                     ['name' => '404 Error', 'path' => '/error-404', 'pro' => false]
                 ],
             ],
